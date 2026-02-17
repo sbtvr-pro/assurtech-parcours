@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+<changeSet id="20260217-001" author="stephane8b">
+    <createTable tableName="QUOTES">
+        <column name="ID" type="BIGINT" autoIncrement="true">
+            <constraints primaryKey="true" nullable="false"/>
+        </column>
+        <column name="CUSTOMER_NAME" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="VEHICLE_TYPE" type="VARCHAR(50)"/>
+        <column name="MONTHLY_PREMIUM" type="DECIMAL(19, 2)"/>
+        <column name="RISK_LEVEL" type="VARCHAR(20)"/>
+        <column name="CREATED_AT" type="TIMESTAMP"/>
+    </createTable>
+</changeSet>
+</databaseChangeLog>
