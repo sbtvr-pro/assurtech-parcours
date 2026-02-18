@@ -17,7 +17,9 @@ public class ListQuotesService implements ListQuotesUseCase
 
     @Override
     public List<Quote> execute() {
-       return quoteRepository.findAll();
+        List<Quote> quotes = quoteRepository.findAll();
+        quotes.forEach(q -> System.out.println("Retrieved Quote: " + q));
+        return quotes;
     }
 
     
