@@ -2,9 +2,12 @@ package com.assurtech.quote_service.infrastructure.adapters.out.db;
 
 import com.assurtech.quote_service.domain.model.Quote;
 import com.assurtech.quote_service.domain.ports.out.QuoteRepositoryPort;
+
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
-@Component // <-- C'est ce qui permet à Spring de "trouver" le Bean
+@Component // Cette annotation indique que cette classe est un composant Spring, ce qui permet à Spring de la détecter et de l'injecter là où elle est nécessaire.
 public class JpaQuoteRepositoryAdapter implements QuoteRepositoryPort {
 
     private final JpaQuoteRepository repository;
@@ -20,6 +23,8 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepositoryPort {
             quote.quoteId(),
             quote.customerName(),
             quote.vehicleType(),
+            quote.age(),
+            quote.claims(),
             quote.monthlyPremium(),
             quote.riskLevel(),
             quote.createdAt()
@@ -32,11 +37,26 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepositoryPort {
             savedEntity.getId(),
             savedEntity.getCustomerName(),
             savedEntity.getVehicleType(),
-            0, // age (si non stocké)
-            0, // claims (si non stocké)
+            savedEntity.getCustomerAge(),
+            savedEntity.getNumberOfClaims(),
             savedEntity.getMonthlyPremium(),
             savedEntity.getRiskLevel(),
             savedEntity.getCreatedAt()
         );
+    }
+
+    @Override
+    public List<Quote> findAll() {
+        List<QuoteEntity> entities = repository.findAll();
+        return entities.stream().map(e -> new Quote(
+            e.getId(),
+            e.getCustomerName(),
+            e.getVehicleType(),
+            e.getCustomerAge(),
+            e.getNumberOfClaims(),
+            e.getMonthlyPremium(),
+            e.getRiskLevel(),
+            e.getCreatedAt()
+        )).toList();
     }
 }

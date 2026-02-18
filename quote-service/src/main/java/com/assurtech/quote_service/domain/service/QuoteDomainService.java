@@ -19,6 +19,8 @@ public class QuoteDomainService implements CreateQuoteUseCase {
     @Override
     public Quote create(String name, String car, int age, int claims) {
         PricingResponse pricing = pricingClientPort.getPricing(age, claims, car);
+        System.out.println("Received pricing: " + pricing);
+        System.out.println("Age: " + age + ", Claims: " + claims + ", Car: " + car);
         
         Quote quote = new Quote(null, name, car, age, claims, pricing.monthlyPremium(), pricing.riskLevel(), null);
         return repositoryPort.save(quote);

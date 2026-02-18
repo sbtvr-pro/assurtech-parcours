@@ -19,4 +19,10 @@
         <column name="CREATED_AT" type="TIMESTAMP"/>
     </createTable>
 </changeSet>
+<changeSet id="20260218-002" author="stephane8b">
+    <addColumn tableName="QUOTES">
+        <column name="CUSTOMER_AGE" type="INT"/>
+        <column name="NUMBER_OF_CLAIMS" type="INT"/>
+    </addColumn>
+</changeSet>
 </databaseChangeLog>

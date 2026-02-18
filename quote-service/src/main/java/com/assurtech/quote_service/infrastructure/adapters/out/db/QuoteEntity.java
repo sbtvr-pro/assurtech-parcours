@@ -27,6 +27,12 @@ public class QuoteEntity {
     @Column(name = "VEHICLE_TYPE")
     private String vehicleType;
 
+    @Column(name = "CUSTOMER_AGE")
+    private int customerAge;
+
+    @Column(name = "NUMBER_OF_CLAIMS")
+    private int numberOfClaims;
+
     @Column(name = "MONTHLY_PREMIUM")
     private BigDecimal monthlyPremium;
 
@@ -42,10 +48,12 @@ public class QuoteEntity {
     public QuoteEntity() {
     }
 
-    public QuoteEntity(Long id, String customerName, String carType, BigDecimal monthlyPremium, String riskLevel, LocalDateTime createdAt) {
+    public QuoteEntity(Long id, String customerName, String carType, int customerAge, int numberOfClaims, BigDecimal monthlyPremium, String riskLevel, LocalDateTime createdAt) {
         this.id = id;
         this.customerName = customerName;
         this.vehicleType = carType;
+        this.customerAge = customerAge;
+        this.numberOfClaims = numberOfClaims;
         this.monthlyPremium = monthlyPremium;
         this.riskLevel = riskLevel;
         this.createdAt = createdAt;
@@ -71,6 +79,12 @@ public class QuoteEntity {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public int getCustomerAge() { return customerAge; }
+    public void setCustomerAge(int customerAge) { this.customerAge = customerAge; }
+
+    public int getNumberOfClaims() { return numberOfClaims; }
+    public void setNumberOfClaims(int numberOfClaims) { this.numberOfClaims = numberOfClaims; }
  
     
 }
