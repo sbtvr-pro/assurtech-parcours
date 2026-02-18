@@ -83,6 +83,25 @@ const createQuote = async () => {
   }
 }
 
+const clearHistory = async () => {
+  if (!confirm("Voulez-vous vraiment supprimer tout l'historique ?")) return
+
+  try {
+    // On appelle l'API avec la méthode DELETE
+    const response = await fetch('http://localhost:8082/api/quotes', {
+      method: 'DELETE'
+    })
+
+    if (response.ok) {
+      quotes.value = [] // On vide la liste côté Front une fois que le Back a confirmé
+    } else {
+      alert("Erreur lors de la suppression de l'historique")
+    }
+  } catch (error) {
+    console.error("Erreur de connexion :", error)
+  }
+}
+
 // 4. LIFECYCLE HOOKS
 // ngOnInit d'Angular
 onMounted(() => {
@@ -156,7 +175,12 @@ onMounted(() => {
 
         <section class="flex-1 flex flex-col min-w-0 bg-slate-50 dark:bg-slate-950 transition-colors">
           <div class="p-10 flex justify-between items-center">
+           <div class="flex flex-row justify-around items-center gap-4">
             <h2 class="text-3xl font-bold">Historique</h2>
+            <button @click="clearHistory" 
+            class="text-[10px] font-bold text-red-500 hover:text-white hover:bg-red-500 border border-red-500/30 px-3 py-1 rounded-lg transition-all cursor-pointer">
+      RÉINITIALISER
+    </button></div>
             <span class="text-slate-400 dark:text-slate-500 font-mono text-sm tracking-tighter">{{ quotes.length }} SIMULATIONS</span>
           </div>
 
@@ -167,7 +191,7 @@ onMounted(() => {
                   <th class="py-4">CONDUCTEUR</th>
                   <th class="py-4">VÉHICULE</th>
                   <th class="py-4">RISQUE</th>
-                  <th class="py-4 text-right">PRIME</th>
+                  <th class="py-4 text-right">PRIME /mois</th>
                 </tr>
               </thead>
               
