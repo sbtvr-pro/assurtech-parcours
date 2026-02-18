@@ -59,4 +59,25 @@ public class JpaQuoteRepositoryAdapter implements QuoteRepositoryPort {
             e.getCreatedAt()
         )).toList();
     }
+
+    @Override
+    public void deleteAll() {
+        repository.deleteAll();
+    }
+
+    @Override
+    public Quote deleteById(Long id) {
+        QuoteEntity entity = repository.findById(id).orElseThrow(() -> new RuntimeException("Quote not found"));
+        repository.deleteById(id);
+        return new Quote(
+            entity.getId(),
+            entity.getCustomerName(),
+            entity.getVehicleType(),
+            entity.getCustomerAge(),
+            entity.getNumberOfClaims(),
+            entity.getMonthlyPremium(),
+            entity.getRiskLevel(),
+            entity.getCreatedAt()
+        );
+    }
 }

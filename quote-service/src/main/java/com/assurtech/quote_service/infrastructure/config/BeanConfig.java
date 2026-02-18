@@ -6,9 +6,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.assurtech.quote_service.domain.ports.in.CreateQuoteUseCase;
+import com.assurtech.quote_service.domain.ports.in.DeleteQuotesUseCase;
 import com.assurtech.quote_service.domain.ports.in.ListQuotesUseCase;
 import com.assurtech.quote_service.domain.ports.out.PricingClientPort;
 import com.assurtech.quote_service.domain.ports.out.QuoteRepositoryPort;
+import com.assurtech.quote_service.domain.service.DeletQuotesService;
 import com.assurtech.quote_service.domain.service.ListQuotesService;
 import com.assurtech.quote_service.domain.service.QuoteDomainService;
 
@@ -22,4 +24,9 @@ public class BeanConfig {
     @Bean
     public ListQuotesUseCase listQuotesUseCase(QuoteRepositoryPort rep) {
         return new ListQuotesService(rep);}
+
+    @Bean
+    public DeleteQuotesUseCase deleteQuotesUseCase(QuoteRepositoryPort rep) {
+        return new DeletQuotesService(rep);
+    }
 }

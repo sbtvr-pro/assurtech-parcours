@@ -7,4 +7,6 @@ import com.assurtech.quote_service.domain.model.Quote;
 public interface QuoteRepositoryPort {
     Quote save(Quote quote);
     List<Quote> findAll();
+    void deleteAll();
+    Quote deleteById(Long id);
 }
