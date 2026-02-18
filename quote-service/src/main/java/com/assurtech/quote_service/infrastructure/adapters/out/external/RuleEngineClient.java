@@ -1,10 +1,12 @@
 package com.assurtech.quote_service.infrastructure.adapters.out.external;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import com.assurtech.quote_service.domain.ports.out.PricingClientPort;
 import com.assurtech.quote_service.domain.ports.out.PricingResponse;
 
+@Component
 public class RuleEngineClient implements PricingClientPort {
   private final RestClient restClient;
 
