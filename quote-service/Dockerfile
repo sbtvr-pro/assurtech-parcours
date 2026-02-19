@@ -1,9 +1,17 @@
-FROM eclipse-temurin:21-jre
+FROM maven:3.10.1-jdk-21 AS build
+WORKDIR /build
 
+# Copy only the quote-service module to keep build context small
+COPY quote-service ./quote-service
+
+# Build the project (skip tests for faster build)
+RUN mvn -f quote-service/pom.xml -DskipTests package
+
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# Copie du jar déjà buildé (mvn -DskipTests package)
-COPY target/quote-service-0.0.1-SNAPSHOT.jar app.jar
+# Copy the built jar from the build stage
+COPY --from=build /build/quote-service/target/quote-service-0.0.1-SNAPSHOT.jar app.jar
 
 ENV SERVER_PORT=8082
 EXPOSE 8082
