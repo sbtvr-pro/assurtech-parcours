@@ -1,15 +1,2 @@
 services:
-  oracle-db:
-    image: gvenzl/oracle-xe:slim-faststart
-    container_name: oracle-db
-    ports:
-      - "1521:1521"
-    environment:
-      - ORACLE_PASSWORD=password
-      - APP_USER=system
-      - APP_USER_PASSWORD=password
-    # healthcheck:
-    #   test: ["CMD-SHELL", "exit | sqlplus -L system/password@localhost:1521/XE"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 5
+  # Plus de base Oracle ici : le projet utilise maintenant H2 en mémoire
