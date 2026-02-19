@@ -1,5 +1,6 @@
 server:
-  port: 8082
+  port: ${SERVER_PORT:8082}
+
 spring:
   application:
     name: quote-service
@@ -7,11 +8,10 @@ spring:
     url: jdbc:h2:mem:quotedb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: org.h2.Driver
     username: sa
-    password: 
+    password:
   h2:
     console:
-      enabled: true # Pour voir tes données dans ton navigateur
-      path: /h2-console
+      enabled: false
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -19,6 +19,17 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.xml
+
+rule:
+  engine:
+    url: ${RULE_ENGINE_URL:http://localhost:8083}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

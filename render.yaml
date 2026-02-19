@@ -1,37 +1,28 @@
-# Render service descriptor for the backend `quote-service`.
-# Place this file at the repo root so Render can autodetect services.
 services:
-  - type: web_service
+  - type: web
+    name: rule-engine-service
+    env: docker
+    branch: master
+    dockerfilePath: rule-engine-service/Dockerfile
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SERVER_PORT
+        value: "8083"
+
+  - type: web
     name: quote-service
     env: docker
     branch: master
-    # Render service descriptor for backend services.
-    # Place this file at the repo root so Render can autodetect services.
-    services:
-      - type: web_service
-        name: quote-service
-        env: docker
-        branch: master
-        docker:
-          dockerfilePath: quote-service/Dockerfile
-        plan: free
-        healthCheckPath: /actuator/health
-        envVars:
-          - key: SPRING_PROFILES_ACTIVE
-            value: prod
-          - key: SERVER_PORT
-            value: "8082"
-
-      - type: web_service
-        name: rule-engine-service
-        env: docker
-        branch: master
-        docker:
-          dockerfilePath: rule-engine-service/Dockerfile
-        plan: free
-        healthCheckPath: /actuator/health
-        envVars:
-          - key: SPRING_PROFILES_ACTIVE
-            value: prod
-          - key: SERVER_PORT
-            value: "8083"
+    dockerfilePath: quote-service/Dockerfile
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SERVER_PORT
+        value: "8082"
+      - key: RULE_ENGINE_URL
+        value: "https://rule-engine-service.onrender.com"

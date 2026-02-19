@@ -10,9 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*") // Replace with your Vercel front URL in production
+                .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowedHeaders("*");
+        // allowCredentials(true) supprimé : incompatible avec allowedOrigins("*")
     }
 }

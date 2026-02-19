@@ -1,6 +1,12 @@
 server:
-  port: 8081
+  port: ${SERVER_PORT:8083}
 
 spring:
   application:
     name: rule-engine-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
