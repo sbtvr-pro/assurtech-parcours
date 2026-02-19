@@ -1,5 +1,5 @@
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:8082/api'
+  import.meta.env.VITE_API_URL?.replace(/\/$/, '') || 'http://localhost:8082'
 
 export type Quote = {
   quoteId: number
