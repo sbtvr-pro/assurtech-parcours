@@ -11,6 +11,7 @@ import { createQuote, deleteAllQuotes, deleteQuoteById, getQuotes, checkServerHe
 const isDark = ref(false)
 const loading = ref(false)
 const serverWakingUp = ref(false)
+const countdown = ref(60)
 const quotes = ref<Quote[]>([])
 
 const form = ref({
@@ -54,11 +55,31 @@ const fetchQuotes = async () => {
     quotes.value = await getQuotes()
   } catch (error) {
     console.error('Erreur API:', error)
-    // On ne montre plus d'erreur si on est en train de réveiller le serveur
     if (!serverWakingUp.value) {
       showMessage('Impossible de charger les devis.', 'Erreur')
     }
   }
+}
+
+const startWakeUpLoop = async () => {
+  serverWakingUp.value = true
+  countdown.value = 60
+  
+  const countdownInterval = setInterval(() => {
+    if (countdown.value > 0) countdown.value--
+  }, 1000)
+
+  return new Promise<void>((resolve) => {
+    const checkInterval = setInterval(async () => {
+      const isHealthy = await checkServerHealth()
+      if (isHealthy || countdown.value <= 0) {
+        clearInterval(checkInterval)
+        clearInterval(countdownInterval)
+        serverWakingUp.value = false
+        resolve()
+      }
+    }, 3000)
+  })
 }
 
 const createQuoteHandler = async () => {
@@ -69,6 +90,12 @@ const createQuoteHandler = async () => {
 
   loading.value = true
   try {
+    // Vérifier si le serveur est prêt
+    const isHealthy = await checkServerHealth()
+    if (!isHealthy) {
+      await startWakeUpLoop()
+    }
+
     await createQuote(form.value)
     await fetchQuotes()
     form.value = { name: '', car: '', age: null, claims: 0 }
@@ -112,28 +139,8 @@ const confirmAndClose = async () => {
   }
 }
 
-const initApp = async () => {
-  loading.value = true
-  const isHealthy = await checkServerHealth()
-  
-  if (!isHealthy) {
-    serverWakingUp.value = true
-    // Ping toutes les 3 secondes jusqu'à ce que ce soit prêt
-    const interval = setInterval(async () => {
-      const ready = await checkServerHealth()
-      if (ready) {
-        clearInterval(interval)
-        serverWakingUp.value = false
-        fetchQuotes()
-      }
-    }, 3000)
-  } else {
-    fetchQuotes()
-  }
-}
-
 onMounted(() => {
-  initApp()
+  fetchQuotes() // Chargement initial silencieux (H2 in memory)
   if (localStorage.getItem('theme') === 'dark') {
     isDark.value = true
     document.documentElement.classList.add('dark')
@@ -149,32 +156,35 @@ onMounted(() => {
       <AppHeader :is-dark="isDark" @toggle-theme="toggleTheme" />
 
       <main class="flex-1 flex flex-col lg:flex-row min-h-0 overflow-y-auto relative">
-        <!-- Loader Global Initial (Splash Screen) -->
-        <div 
-          v-if="!quotes.length && !serverWakingUp && loading"
-          class="absolute inset-0 z-40 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center"
-        >
-          <div class="flex flex-col items-center space-y-4">
-            <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <div class="text-center">
-              <p class="text-slate-700 dark:text-slate-200 font-bold">Démarrage des services...</p>
-              <p class="text-slate-500 dark:text-slate-400 text-sm italic animate-pulse">Attendez environ 40 secondes (hébergement gratuit)</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bandeau de réveil du serveur -->
+        <!-- Bandeau de réveil du serveur (Déclenché au clic) -->
         <div 
           v-if="serverWakingUp"
-          class="absolute top-4 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-2xl"
+          class="absolute inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
         >
-          <div class="bg-blue-600/90 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl border border-blue-400/30 flex items-center space-x-4 animate-pulse">
-            <div class="w-10 h-10 flex-shrink-0 bg-blue-500 rounded-full flex items-center justify-center">
-              <span class="animate-spin text-xl">☕</span>
+          <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center space-y-6 max-w-md animate-in fade-in zoom-in duration-300">
+            <div class="relative w-24 h-24">
+              <div class="absolute inset-0 border-4 border-blue-600/20 rounded-full"></div>
+              <div 
+                class="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"
+              ></div>
+              <div class="absolute inset-0 flex items-center justify-center font-bold text-2xl text-blue-600">
+                {{ countdown }}s
+              </div>
             </div>
-            <div>
-              <p class="font-bold">Le serveur se réveille...</p>
-              <p class="text-sm text-blue-100 italic">Merci de patienter environ 40 secondes (hébergement gratuit). La page s'actualisera tout seul.</p>
+            
+            <div class="space-y-2">
+              <p class="text-xl font-black text-slate-800 dark:text-white">Réveil du serveur en cours</p>
+              <p class="text-slate-500 dark:text-slate-400 leading-relaxed">
+                Render met ses services en veille après 15 min d'inactivité. 
+                <span class="block mt-2 font-medium text-blue-600 dark:text-blue-400">Le calcul démarrera automatiquement dès que le serveur sera prêt.</span>
+              </p>
+            </div>
+
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div 
+                class="bg-blue-600 h-full transition-all duration-1000 ease-linear"
+                :style="{ width: `${(countdown / 60) * 100}%` }"
+              ></div>
             </div>
           </div>
         </div>
