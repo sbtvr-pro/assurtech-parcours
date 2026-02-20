@@ -27,13 +27,13 @@ async function parseJsonSafely(response: Response) {
 }
 
 export async function getQuotes(): Promise<Quote[]> {
-  const response = await fetch(`${API_BASE_URL}/quotes`);
+  const response = await fetch(`${API_BASE_URL}/api/quotes`);
   if (!response.ok) throw new Error("Erreur lors du chargement des devis");
   return (await response.json()) as Quote[];
 }
 
 export async function createQuote(payload: CreateQuotePayload): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/quotes`, {
+  const response = await fetch(`${API_BASE_URL}/api/quotes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -49,13 +49,13 @@ export async function createQuote(payload: CreateQuotePayload): Promise<void> {
 }
 
 export async function deleteAllQuotes(): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/quotes`, { method: "DELETE" });
+  const response = await fetch(`${API_BASE_URL}/api/quotes`, { method: "DELETE" });
   if (!response.ok)
     throw new Error("Erreur lors de la suppression de l'historique");
 }
 
 export async function deleteQuoteById(quoteId: number): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/quotes/${quoteId}`, {
+  const response = await fetch(`${API_BASE_URL}/api/quotes/${quoteId}`, {
     method: "DELETE",
   });
   if (!response.ok) throw new Error("Erreur lors de la suppression du devis");
