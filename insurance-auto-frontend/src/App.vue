@@ -156,7 +156,10 @@ onMounted(() => {
         >
           <div class="flex flex-col items-center space-y-4">
             <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-slate-500 dark:text-slate-400 font-medium animate-pulse">Chargement de votre espace...</p>
+            <div class="text-center">
+              <p class="text-slate-700 dark:text-slate-200 font-bold">Démarrage des services...</p>
+              <p class="text-slate-500 dark:text-slate-400 text-sm italic animate-pulse">Attendez environ 40 secondes (hébergement gratuit)</p>
+            </div>
           </div>
         </div>
 
