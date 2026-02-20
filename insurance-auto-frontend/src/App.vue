@@ -113,6 +113,7 @@ const confirmAndClose = async () => {
 }
 
 const initApp = async () => {
+  loading.value = true
   const isHealthy = await checkServerHealth()
   
   if (!isHealthy) {
@@ -148,6 +149,17 @@ onMounted(() => {
       <AppHeader :is-dark="isDark" @toggle-theme="toggleTheme" />
 
       <main class="flex-1 flex flex-col lg:flex-row min-h-0 overflow-y-auto relative">
+        <!-- Loader Global Initial (Splash Screen) -->
+        <div 
+          v-if="!quotes.length && !serverWakingUp && loading"
+          class="absolute inset-0 z-40 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center"
+        >
+          <div class="flex flex-col items-center space-y-4">
+            <div class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <p class="text-slate-500 dark:text-slate-400 font-medium animate-pulse">Chargement de votre espace...</p>
+          </div>
+        </div>
+
         <!-- Bandeau de réveil du serveur -->
         <div 
           v-if="serverWakingUp"
