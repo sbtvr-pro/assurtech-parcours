@@ -171,7 +171,7 @@ onMounted(() => {
             </div>
             <div>
               <p class="font-bold">Le serveur se réveille...</p>
-              <p class="text-sm text-blue-100 italic">Merci de patienter environ 30 secondes (hébergement gratuit). La page s'actualisera tout seul.</p>
+              <p class="text-sm text-blue-100 italic">Merci de patienter environ 40 secondes (hébergement gratuit). La page s'actualisera tout seul.</p>
             </div>
           </div>
         </div>
