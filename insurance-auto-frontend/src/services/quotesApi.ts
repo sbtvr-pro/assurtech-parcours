@@ -60,3 +60,14 @@ export async function deleteQuoteById(quoteId: number): Promise<void> {
   });
   if (!response.ok) throw new Error("Erreur lors de la suppression du devis");
 }
+
+export async function checkServerHealth(): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/actuator/health`, {
+      method: "GET",
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}

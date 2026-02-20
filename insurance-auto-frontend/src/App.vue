@@ -6,10 +6,11 @@ import QuoteForm from './components/QuoteForm.vue'
 import QuoteHistory from './components/QuoteHistory.vue'
 import MessageModal from './components/modals/MessageModal.vue'
 import ConfirmModal from './components/modals/ConfirmModal.vue'
-import { createQuote, deleteAllQuotes, deleteQuoteById, getQuotes, type Quote } from './services/quotesApi'
+import { createQuote, deleteAllQuotes, deleteQuoteById, getQuotes, checkServerHealth, type Quote } from './services/quotesApi'
 
 const isDark = ref(false)
 const loading = ref(false)
+const serverWakingUp = ref(false)
 const quotes = ref<Quote[]>([])
 
 const form = ref({
@@ -53,7 +54,10 @@ const fetchQuotes = async () => {
     quotes.value = await getQuotes()
   } catch (error) {
     console.error('Erreur API:', error)
-    showMessage('Impossible de charger les devis.', 'Erreur')
+    // On ne montre plus d'erreur si on est en train de réveiller le serveur
+    if (!serverWakingUp.value) {
+      showMessage('Impossible de charger les devis.', 'Erreur')
+    }
   }
 }
 
@@ -108,8 +112,27 @@ const confirmAndClose = async () => {
   }
 }
 
+const initApp = async () => {
+  const isHealthy = await checkServerHealth()
+  
+  if (!isHealthy) {
+    serverWakingUp.value = true
+    // Ping toutes les 3 secondes jusqu'à ce que ce soit prêt
+    const interval = setInterval(async () => {
+      const ready = await checkServerHealth()
+      if (ready) {
+        clearInterval(interval)
+        serverWakingUp.value = false
+        fetchQuotes()
+      }
+    }, 3000)
+  } else {
+    fetchQuotes()
+  }
+}
+
 onMounted(() => {
-  fetchQuotes()
+  initApp()
   if (localStorage.getItem('theme') === 'dark') {
     isDark.value = true
     document.documentElement.classList.add('dark')
@@ -124,7 +147,23 @@ onMounted(() => {
     <div class="min-h-screen w-full flex flex-col">
       <AppHeader :is-dark="isDark" @toggle-theme="toggleTheme" />
 
-      <main class="flex-1 flex flex-col lg:flex-row min-h-0 overflow-y-auto">
+      <main class="flex-1 flex flex-col lg:flex-row min-h-0 overflow-y-auto relative">
+        <!-- Bandeau de réveil du serveur -->
+        <div 
+          v-if="serverWakingUp"
+          class="absolute top-4 left-1/2 -translate-x-1/2 z-50 w-11/12 max-w-2xl"
+        >
+          <div class="bg-blue-600/90 backdrop-blur-md text-white p-4 rounded-2xl shadow-2xl border border-blue-400/30 flex items-center space-x-4 animate-pulse">
+            <div class="w-10 h-10 flex-shrink-0 bg-blue-500 rounded-full flex items-center justify-center">
+              <span class="animate-spin text-xl">☕</span>
+            </div>
+            <div>
+              <p class="font-bold">Le serveur se réveille...</p>
+              <p class="text-sm text-blue-100 italic">Merci de patienter environ 30 secondes (hébergement gratuit). La page s'actualisera tout seul.</p>
+            </div>
+          </div>
+        </div>
+
         <QuoteForm v-model="form" :loading="loading" @submit-form="createQuoteHandler" />
         <QuoteHistory :quotes="quotes" @clear-all="clearHistory" @delete-one="deleteOneQuote" />
       </main>
