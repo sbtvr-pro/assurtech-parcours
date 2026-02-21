@@ -2,13 +2,9 @@ package com.assurtech.quote_service.infrastructure.adapters.out.external;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClient;
-
-import com.assurtech.quote_service.domain.exception.PricingException;
-import com.assurtech.quote_service.domain.model.RuleRequest;
-import com.assurtech.quote_service.domain.ports.out.PricingClientPort;
-import com.assurtech.quote_service.domain.ports.out.PricingResponse;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.web.client.ResourceAccessException;
 
 @Component
 public class RuleEngineClient implements PricingClientPort {
@@ -19,6 +15,8 @@ public class RuleEngineClient implements PricingClientPort {
     }
 
     @Override
+    @Retryable(retryFor = { ResourceAccessException.class,
+            Exception.class }, maxAttempts = 3, backoff = @Backoff(delay = 2000, multiplier = 2))
     public PricingResponse getPricing(int age, int claims, String carType) {
         try {
             return restClient.post()
@@ -32,6 +30,5 @@ public class RuleEngineClient implements PricingClientPort {
         } catch (Exception e) {
             throw new PricingException("Failed to retrieve pricing from rule engine: " + e.getMessage());
         }
-
     }
 }
